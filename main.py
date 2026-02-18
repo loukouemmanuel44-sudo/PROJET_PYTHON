@@ -25,7 +25,7 @@ def afficher_classes():
 # --- GESTION DES ÉTUDIANTS ---
 
 @app.post("/classes/{classe_id}/etudiants")
-def ajouter_etudiant_dans_classe(classe_id: int, etudiant: Student):
+def ajouter_un_etudiant_dans_une_classe(classe_id: int, etudiant: Student):
     for c in base_classes:
         if c.id == classe_id:
             # Empêcher les doublons par ID (Fonctionnalité Bonus)
@@ -41,7 +41,7 @@ def ajouter_etudiant_dans_classe(classe_id: int, etudiant: Student):
 # --- FONCTIONNALITÉS SUPPLÉMENTAIRES (POUR LA MEILLEURE NOTE) ---
 
 @app.post("/etudiants/{etudiant_id}/notes")
-def ajouter_note(etudiant_id: int, note: float):
+def ajouter_une_note(etudiant_id: int, note: float):
     for c in base_classes:
         for e in c.etudiants:
             if e.id == etudiant_id:
@@ -75,7 +75,7 @@ def statistiques_generales():
     }
 
 @app.delete("/classes/{classe_id}")
-def supprimer_classe(classe_id: int):
+def supprimer_une_classe(classe_id: int):
     for i in range(len(base_classes)):
         if base_classes[i].id == classe_id:
             base_classes.pop(i)

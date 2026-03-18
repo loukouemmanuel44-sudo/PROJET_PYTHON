@@ -1,12 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List
 
 class Student(BaseModel):
     id: int
     nom: str
-    notes: List[float] = []  # Liste vide par défaut pour les notes
+    notes: List[float] = Field(default_factory=list)
 
 class Classe(BaseModel):
     id: int
     nom: str
-    etudiants: List[Student] = [] # On stocke directement les objets étudiants ici
+    etudiants: List[Student] = Field(default_factory=list)

@@ -3,14 +3,13 @@ from models import Student, Classe
 
 app = FastAPI()
 
-# Nos listes de stockage (comme tes listes de comptes)
+# Base de données en mémoire
 base_classes = []
 
-# --- GESTION DES CLASSES ---
+#  GESTION DES CLASSES 
 
 @app.post("/classes")
 def creer_classe(nouvelle_classe: Classe):
-    # Vérifier si la classe existe déjà (Fonctionnalité Bonus)
     for c in base_classes:
         if c.id == nouvelle_classe.id:
             return {"erreur": "Cette classe existe deja"}
@@ -22,13 +21,12 @@ def creer_classe(nouvelle_classe: Classe):
 def afficher_classes():
     return base_classes
 
-# --- GESTION DES ÉTUDIANTS ---
+# GESTION DES ÉTUDIANTS 
 
 @app.post("/classes/{classe_id}/etudiants")
 def ajouter_un_etudiant_dans_une_classe(classe_id: int, etudiant: Student):
     for c in base_classes:
         if c.id == classe_id:
-            # Empêcher les doublons par ID (Fonctionnalité Bonus)
             for e in c.etudiants:
                 if e.id == etudiant.id:
                     return {"erreur": "Cet etudiant existe deja dans cette classe"}
@@ -38,7 +36,7 @@ def ajouter_un_etudiant_dans_une_classe(classe_id: int, etudiant: Student):
     
     return {"erreur": "Classe introuvable"}
 
-# --- FONCTIONNALITÉS SUPPLÉMENTAIRES (POUR LA MEILLEURE NOTE) ---
+# NOTES ET STATISTIQUES
 
 @app.post("/etudiants/{etudiant_id}/notes")
 def ajouter_une_note(etudiant_id: int, note: float):
@@ -57,17 +55,13 @@ def moyenne_etudiant(etudiant_id: int):
                 if len(e.notes) == 0:
                     return {"moyenne": 0, "message": "Aucune note pour le moment"}
                 
-                # Calcul simple de la moyenne
-                total = sum(e.notes)
-                moyenne = total / len(e.notes)
+                moyenne = sum(e.notes) / len(e.notes)
                 return {"nom": e.nom, "moyenne": moyenne}
     return {"erreur": "Etudiant introuvable"}
 
 @app.get("/statistiques")
 def statistiques_generales():
-    total_eleves = 0
-    for c in base_classes:
-        total_eleves += len(c.etudiants)
+    total_eleves = sum(len(c.etudiants) for c in base_classes)
     
     return {
         "nombre_total_classes": len(base_classes),
@@ -76,8 +70,8 @@ def statistiques_generales():
 
 @app.delete("/classes/{classe_id}")
 def supprimer_une_classe(classe_id: int):
-    for i in range(len(base_classes)):
-        if base_classes[i].id == classe_id:
-            base_classes.pop(i)
+    for c in base_classes:
+        if c.id == classe_id:
+            base_classes.remove(c)
             return {"message": "Classe supprimee"}
     return {"erreur": "Classe introuvable"}
